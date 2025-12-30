@@ -80,7 +80,7 @@ const questions = [
   {q: '20. The medium-term scheduler is responsible for:', opts:['A) CPU scheduling','B) Job admission','C) Swapping processes between memory and disk','D) Device management'], ans: 'C'},
   {q: '21. What is swapping in the context of medium-term scheduling?', opts:['A) Exchanging data between processes','B) Removing process from memory to disk and bringing it back','C) Switching between user mode and kernel mode','D) Changing process priorities'], ans: 'B'},
   {q: '22. Cooperating processes are processes that:', opts:['A) Run independently without interaction','B) Can affect or be affected by other processes','C) Never share data','D) Run only in kernel mode'], ans: 'B'},
-  {q: '23. Which is NOT a model of Interprocess Communication (IPC)?', opts:['A) Shared memory','B) Message passing','C) Direct hardware access','D) Both A and B are IPC models'], ans: 'C'},
+  {q: '23. Which is NOT a model of Interprocess Communication (IPC)?', opts:['A) Shared memory','B) Message passing','C) Direct hardware access','D) Both A and B are IPC models'], ans: 'C', fixed: true},
   {q: '24. In the shared memory IPC model:', opts:['A) Processes exchange messages','B) Processes share a region of memory','C) Processes use system calls only','D) Processes cannot communicate'], ans: 'B'},
   {q: '25. In message passing IPC:', opts:['A) Processes share memory directly','B) Processes communicate by exchanging messages','C) No communication occurs','D) Only the kernel can communicate'], ans: 'B'},
   {q: '26. The data section of a process contains:', opts:['A) Program code','B) Global variables','C) Local variables','D) Function parameters'], ans: 'B'},
@@ -163,7 +163,7 @@ const questions = [
   {q: '95. What does cd ~ do?', opts:['A) Change to home directory','B) Change to root directory','C) Change to previous directory','D) Create directory'], ans: 'A'},
   {q: '96. What does cd .. do?', opts:['A) Move up one directory level','B) Move to home directory','C) List directories','D) Create directory'], ans: 'A'},
   {q: '97. Which command is used to change directories?', opts:['A) mkdir','B) cd','C) pwd','D) ls'], ans: 'B'},
-  {q: '98. How do you navigate to your home directory?', opts:['A) cd /','B) cd ~','C) cd home','D) Both a and b'], ans: 'B'},
+  {q: '98. How do you navigate to your home directory?', opts:['A) cd /','B) cd ~','C) cd home','D) Both a and b'], ans: 'B', fixed: true},
   {q: '99. What does the mkdir command do?', opts:['A) Make file','B) Make directory','C) Move directory','D) Modify directory'], ans: 'B'},
   {q: '100. Which command creates an empty file?', opts:['A) create','B) new','C) touch','D) makefile'], ans: 'C'},
   {q: '101. What does touch filename.txt do?', opts:['A) Deletes the file','B) Creates an empty file or updates timestamp','C) Opens the file','D) Copies the file'], ans: 'B'},
@@ -184,7 +184,7 @@ const questions = [
   {q: '116. What\'s the difference between cp and mv?', opts:['A) No difference','B) cp copies, mv moves (original is deleted)','C) mv is faster','D) cp is safer'], ans: 'B'},
   {q: '117. What does --help do?', opts:['A) Call technical support','B) Display command help information','C) Help other users','D) Fix errors'], ans: 'B'},
   {q: '118. Which command displays the manual page for a command?', opts:['A) help','B) info','C) man','D) manual'], ans: 'C'},
-  {q: '119. How would you get help for the ls command?', opts:['A) ls --help','B) man ls','C) Both a and b','D) help ls'], ans: 'C'},
+  {q: '119. How would you get help for the ls command?', opts:['A) ls --help','B) man ls','C) Both a and b','D) help ls'], ans: 'C', fixed: true},
   {q: '120. What does the date command do?', opts:['A) Set system date','B) Display current date and time','C) Calculate dates','D) Format dates'], ans: 'B'},
   {q: '121. What does the cal command display?', opts:['A) Calculator','B) Calendar','C) Calibration','D) Call log'], ans: 'B'},
   {q: '122. What does the top command do?', opts:['A) Move to top directory','B) Display top files','C) Display running processes and system resources','D) Display top users'], ans: 'C'},
@@ -195,7 +195,7 @@ const questions = [
   {q: '127. What does sudo stand for?', opts:['A) Super do','B) Superuser do','C) System undo','D) Secure domain'], ans: 'B'},
   {q: '128. Which command sequence creates a directory and navigates into it?', opts:['A) mkdir folder; cd folder','B) cd folder; mkdir folder','C) create folder; open folder','D) make folder; enter folder'], ans: 'A'},
   {q: '129. How do you copy a file and rename it in one command?', opts:['A) cp file1 file2','B) mv file1 file2','C) copy file1 to file2','D) rename file1 file2'], ans: 'A'},
-  {q: '130. Which command shows hidden files with detailed information?', opts:['A) ls -a -l','B) ls -al','C) Both a and b','D) ls -h'], ans: 'C'},
+  {q: '130. Which command shows hidden files with detailed information?', opts:['A) ls -a -l','B) ls -al','C) Both a and b','D) ls -h'], ans: 'C', fixed: true},
   {q: '131. What happens if you use rm -r on a non-empty directory?', opts:['A) Error message','B) Removes directory and all contents','C) Removes only empty subdirectories','D) Nothing happens'], ans: 'B'},
   {q: '132. What\'s the purpose of the touch command on an existing file?', opts:['A) Delete the file','B) Update the file\'s timestamp','C) Lock the file','D) Copy the file'], ans: 'B'},
   {q: '133. What does echo "Hello" >> file.txt do?', opts:['A) Overwrites file with "Hello"','B) Appends "Hello" to the end of file','C) Displays "Hello"','D) Creates a new file'], ans: 'B'},
@@ -303,24 +303,39 @@ function shuffleQuestions(){
     [currentQuestions[i], currentQuestions[j]] = [currentQuestions[j], currentQuestions[i]];
   }
 
-  currentQuestions = currentQuestions.map(q => {
-    if(q.opts.length === 2 && q.opts[0].includes('TRUE') && q.opts[1].includes('FALSE')){
-      return q;
-    }
-    const newQ = {...q};
-    const optionsWithLetters = newQ.opts.map((opt, idx) => ({
-      text: opt,
-      originalLetter: String.fromCharCode(65 + idx)
-    }));
-    for(let i = optionsWithLetters.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [optionsWithLetters[i], optionsWithLetters[j]] = [optionsWithLetters[j], optionsWithLetters[i]];
-    }
-    newQ.opts = optionsWithLetters.map(item => item.text);
-    const correctAnswerIndex = optionsWithLetters.findIndex(item => item.originalLetter === newQ.ans);
-    newQ.ans = String.fromCharCode(65 + correctAnswerIndex);
-    return newQ;
-  });
+currentQuestions = currentQuestions.map(q => {
+  // 1) Skip TRUE/FALSE questions
+  if (q.opts.length === 2 && q.opts[0].includes('TRUE') && q.opts[1].includes('FALSE')) {
+    return q;
+  }
+
+  // 2) Skip “fixed” questions like "Both A and B"
+  if (q.fixed === true) {
+    return q;
+  }
+
+  const newQ = {...q};
+
+  const optionsWithLetters = newQ.opts.map((opt, idx) => ({
+    text: opt,
+    originalLetter: String.fromCharCode(65 + idx)
+  }));
+
+  for (let i = optionsWithLetters.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [optionsWithLetters[i], optionsWithLetters[j]] = [optionsWithLetters[j], optionsWithLetters[i]];
+  }
+
+  newQ.opts = optionsWithLetters.map(item => item.text);
+
+  const correctAnswerIndex = optionsWithLetters.findIndex(
+    item => item.originalLetter === newQ.ans
+  );
+  newQ.ans = String.fromCharCode(65 + correctAnswerIndex);
+
+  return newQ;
+});
+
 
   renderQuiz();
   window.scrollTo({top: 0, behavior: 'smooth'});
