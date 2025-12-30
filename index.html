@@ -1,0 +1,337 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Operating Systems — Quiz (Auto-grade)</title>
+  <style>
+    :root{--bg:#f6f8fb;--card:#ffffff;--accent:#0b5cff;--muted:#6b7280;}
+    body{font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);margin:0;padding:24px;color:#0b1220}
+    .container{max-width:960px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 20px;color:var(--muted)}
+    .card{background:var(--card);border-radius:12px;box-shadow:0 6px 18px rgba(12,24,48,0.06);padding:18px}
+    .q{padding:12px;border-radius:8px;margin-bottom:10px;border:1px solid #eef2ff}
+    .q h3{margin:0 0 8px;font-size:15px}
+    .opts{display:flex;flex-direction:column;gap:6px}
+    label.opt{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer}
+    input[type=radio]{width:16px;height:16px}
+    .result{margin-top:14px;padding:12px;border-radius:8px;background:#f3f7ff;border:1px solid #dbe8ff}
+    .correct{background:#e6ffef;border-color:#b9f2d0}
+    .wrong{background:#fff0f0;border-color:#ffd2d2}
+    .score{font-weight:700;font-size:18px}
+    .controls{display:flex;gap:8px;align-items:center;margin-top:14px}
+    button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer}
+    button.secondary{background:#f3f4f6;color:#0b1220}
+    .feedback{margin-top:12px}
+    small.hint{color:var(--muted)}
+    footer{margin-top:18px;color:#muted;font-size:13px}
+    @media (max-width:640px){body{padding:12px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Operating Systems — Quiz (Auto-grade)</h1>
+        <p class="lead">Answer all questions then press <strong>Submit</strong> to grade. You can reset anytime.</p>
+      </div>
+    </header>
+
+    <div class="card" id="quizCard">
+      <div id="quiz"></div>
+
+      <div class="controls">
+        <button id="submitBtn">Submit</button>
+        <button id="resetBtn" class="secondary" type="button">Reset</button>
+        <button id="shuffleBtn" class="secondary" type="button">Shuffle Questions</button>
+        <div style="margin-left:auto"><small class="hint">Questions: 145</small></div>
+      </div>
+
+      <div id="summary" class="feedback"></div>
+    </div>
+
+    <footer>all rights reserved to khaled :P</footer>
+  </div>
+
+<script>
+// Questions dataset from the PDF test bank
+const questions = [
+  // Chapter 3 – Processes (MCQ)
+  {q: '1. What is a program before it becomes a process?', opts:['A) An active entity in memory','B) A passive entity stored on disk','C) A running application','D) A system call'], ans: 'B'},
+  {q: '2. When does a program become a process?', opts:['A) When it is written by a programmer','B) When it is compiled','C) When an executable file is loaded into memory','D) When it is saved on disk'], ans: 'C'},
+  {q: '3. Which of the following is NOT a component of a process in memory?', opts:['A) Text Section','B) Data Section','C) Compiler','D) Stack'], ans: 'C'},
+  {q: '4. The text section of a process contains:', opts:['A) Global variables','B) The program code','C) Dynamically allocated memory','D) Temporary data'], ans: 'B'},
+  {q: '5. What does the heap section of a process contain?', opts:['A) Function parameters','B) Program code','C) Memory dynamically allocated during runtime','D) Global variables'], ans: 'C'},
+  {q: '6. The stack section contains:', opts:['A) Global variables only','B) Program code only','C) Function parameters, return addresses, and local variables','D) Dynamically allocated memory only'], ans: 'C'},
+  {q: '7. A Process Control Block (PCB) is used to:', opts:['A) Compile programs','B) Represent a process in the operating system','C) Store user data','D) Manage disk space'], ans: 'B'},
+  {q: '8. Which information is NOT typically stored in a PCB?', opts:['A) Process identifier','B) CPU registers','C) Source code','D) Process state'], ans: 'C'},
+  {q: '9. The process state "new" means:', opts:['A) The process is being executed','B) The process is being created','C) The process is waiting for I/O','D) The process has finished'], ans: 'B'},
+  {q: '10. When a process is in the "running" state, it means:', opts:['A) It is waiting for I/O','B) Instructions are being executed','C) It is in the ready queue','D) It has been terminated'], ans: 'B'},
+  {q: '11. A process in the "waiting" state is:', opts:['A) Being executed by the CPU','B) Ready to be assigned to a processor','C) Waiting for some event to occur','D) Being created'], ans: 'C'},
+  {q: '12. The "ready" state means the process is:', opts:['A) Executing instructions','B) Waiting to be assigned to a processor','C) Waiting for I/O completion','D) Terminated'], ans: 'B'},
+  {q: '13. Which queue contains all processes in the system?', opts:['A) Ready queue','B) Job queue','C) Device queue','D) Waiting queue'], ans: 'B'},
+  {q: '14. The ready queue contains processes that are:', opts:['A) Waiting for I/O devices','B) Being created','C) Residing in main memory, ready and waiting to execute','D) Terminated'], ans: 'C'},
+  {q: '15. Device queues contain processes:', opts:['A) Ready to execute','B) Being created','C) Waiting for an I/O device','D) In the terminated state'], ans: 'C'},
+  {q: '16. The short-term scheduler is also known as:', opts:['A) Job scheduler','B) CPU scheduler','C) Medium-term scheduler','D) Process scheduler'], ans: 'B'},
+  {q: '17. How frequently is the short-term scheduler invoked?', opts:['A) Every few seconds','B) Every few minutes','C) Every few milliseconds','D) Once per hour'], ans: 'C'},
+  {q: '18. The long-term scheduler:', opts:['A) Selects which process should be executed next','B) Selects which processes should be brought into the ready queue','C) Removes processes from memory','D) Manages I/O devices'], ans: 'B'},
+  {q: '19. The long-term scheduler controls:', opts:['A) CPU utilization','B) The degree of multiprogramming','C) I/O operations','D) Memory allocation only'], ans: 'B'},
+  {q: '20. The medium-term scheduler is responsible for:', opts:['A) CPU scheduling','B) Job admission','C) Swapping processes between memory and disk','D) Device management'], ans: 'C'},
+  {q: '21. What is swapping in the context of medium-term scheduling?', opts:['A) Exchanging data between processes','B) Removing process from memory to disk and bringing it back','C) Switching between user mode and kernel mode','D) Changing process priorities'], ans: 'B'},
+  {q: '22. Cooperating processes are processes that:', opts:['A) Run independently without interaction','B) Can affect or be affected by other processes','C) Never share data','D) Run only in kernel mode'], ans: 'B'},
+  {q: '23. Which is NOT a model of Interprocess Communication (IPC)?', opts:['A) Shared memory','B) Message passing','C) Direct hardware access','D) Both A and B are IPC models'], ans: 'C'},
+  {q: '24. In the shared memory IPC model:', opts:['A) Processes exchange messages','B) Processes share a region of memory','C) Processes use system calls only','D) Processes cannot communicate'], ans: 'B'},
+  {q: '25. In message passing IPC:', opts:['A) Processes share memory directly','B) Processes communicate by exchanging messages','C) No communication occurs','D) Only the kernel can communicate'], ans: 'B'},
+  {q: '26. The data section of a process contains:', opts:['A) Program code','B) Global variables','C) Local variables','D) Function parameters'], ans: 'B'},
+  {q: '27. Which scheduler must be fast because it is invoked frequently?', opts:['A) Long-term scheduler','B) Medium-term scheduler','C) Short-term scheduler','D) I/O scheduler'], ans: 'C'},
+  {q: '28. The program counter in a PCB stores:', opts:['A) The number of programs running','B) The location of the next instruction to execute','C) The process identifier','D) The CPU utilization'], ans: 'B'},
+  {q: '29. CPU registers information in the PCB contains:', opts:['A) Contents of all process-centric registers','B) Only the program counter','C) Memory addresses only','D) I/O device information'], ans: 'A'},
+  {q: '30. Accounting information in the PCB includes:', opts:['A) Process state only','B) CPU used and clock time elapsed since start','C) Program code','D) User passwords'], ans: 'B'},
+
+  // Chapter 3 – Processes (True/False)
+  {q: '31. A program is an active entity while a process is a passive entity.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '32. The text section of a process is typically read-only and might be shared by multiple processes.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '33. The heap contains temporary data such as function parameters.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '34. A Process Control Block (PCB) is used to represent a process in the operating system.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '35. A process can only be in one of three states: new, running, or terminated.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '36. The ready state means instructions are currently being executed.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '37. The long-term scheduler is invoked more frequently than the short-term scheduler.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '38. The short-term scheduler must be fast because it is invoked very frequently.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '39. Device queues contain processes waiting for I/O devices.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '40. Independent processes cannot affect or be affected by other processes in the system.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '41. Interprocess Communication (IPC) has only one model: shared memory.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '42. The stack section contains global variables.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '43. The long-term scheduler controls the degree of multiprogramming.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '44. The medium-term scheduler is responsible for swapping processes between memory and disk.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '45. All cooperating processes need interprocess communication (IPC).', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+
+  // Chapter 4 – Threads (MCQ)
+  {q: '46. What is a thread?', opts:['A) A separate process','B) A basic unit of CPU utilization','C) An operating system','D) A hardware component'], ans: 'B'},
+  {q: '47. A thread comprises of:', opts:['A) Thread ID, program counter, register set, and stack','B) Only a program counter','C) Only memory space','D) Only code section'], ans: 'A'},
+  {q: '48. Threads belonging to the same process share:', opts:['A) Their own stack','B) Their own register set','C) Code section, data section, and OS resources','D) Nothing at all'], ans: 'C'},
+  {q: '49. Which of the following do threads NOT share?', opts:['A) Code section','B) Data section','C) Stack','D) Open files'], ans: 'C'},
+  {q: '50. What problem do threads solve in program execution?', opts:['A) Memory allocation','B) Seamless execution of multiple sections simultaneously','C) Hardware failures','D) Network connectivity'], ans: 'B'},
+  {q: '51. In a web browser, threads can be used for:', opts:['A) Displaying images while retrieving data from network','B) Only displaying images','C) Only retrieving network data','D) Compiling code'], ans: 'A'},
+  {q: '52. In a word processor, threads can handle:', opts:['A) Only displaying graphics','B) Only spell checking','C) Displaying graphics, responding to keystrokes, and spell checking','D) Only saving files'], ans: 'C'},
+  {q: '53. Modern operating system kernels are:', opts:['A) Single-threaded','B) Multithreaded','C) Thread-free','D) Process-only'], ans: 'B'},
+  {q: '54. Kernel threads perform tasks such as:', opts:['A) Managing devices, memory, and interrupt handling','B) Only user interface display','C) Only file editing','D) Only network browsing'], ans: 'A'},
+  {q: '55. On a single-core system, multithreading provides:', opts:['A) True parallelism','B) Concurrent execution','C) No benefit','D) Hardware upgrade'], ans: 'B'},
+  {q: '56. On a multi-core system, multithreading provides:', opts:['A) Only concurrent execution','B) True parallelism','C) No advantage','D) Slower execution'], ans: 'B'},
+  {q: '57. User threads are:', opts:['A) Supported above the kernel without kernel support','B) Managed directly by the operating system','C) Not supported in modern systems','D) The same as kernel threads'], ans: 'A'},
+  {q: '58. Kernel threads are:', opts:['A) Managed without kernel support','B) Supported and managed directly by the operating system','C) Not used in modern systems','D) Only for user applications'], ans: 'B'},
+  {q: '59. How many common multithreading models exist?', opts:['A) Two models','B) Three models','C) Four models','D) Five models'], ans: 'B'},
+  {q: '60. The One-to-One model maps:', opts:['A) Multiple user threads to one kernel thread','B) One user thread to multiple kernel threads','C) Each user thread to a kernel thread','D) No mapping between threads'], ans: 'C'},
+  {q: '61. The One-to-One model allows:', opts:['A) Only single thread execution','B) Multiple threads to run in parallel on multiprocessors','C) No parallel execution','D) Only sequential execution'], ans: 'B'},
+  {q: '62. The main drawback of the One-to-One model is:', opts:['A) Poor performance','B) No parallelism','C) Creating user thread requires creating corresponding kernel thread','D) Cannot use multiprocessors'], ans: 'C'},
+  {q: '63. Which operating systems implement the One-to-One model?', opts:['A) Only Linux','B) Only Windows','C) Linux and Windows family','D) None of the above'], ans: 'C'},
+  {q: '64. The Many-to-One model maps:', opts:['A) One user thread to one kernel thread','B) Many user threads to one kernel thread','C) One user thread to many kernel threads','D) Many user threads to many kernel threads'], ans: 'B'},
+  {q: '65. The Many-to-Many model allows:', opts:['A) Only one-to-one mapping','B) Many user threads to be mapped to many kernel threads','C) No thread mapping','D) Only single thread execution'], ans: 'B'},
+  {q: '66. In the Many-to-Many model, the operating system can:', opts:['A) Create only one kernel thread','B) Create a sufficient number of kernel threads','C) Not create any kernel threads','D) Only use user threads'], ans: 'B'},
+  {q: '67. The Two-level model is similar to:', opts:['A) One-to-One model','B) Many-to-One model','C) Many-to-Many model','D) No other model'], ans: 'C'},
+  {q: '68. The Two-level model allows:', opts:['A) No thread binding','B) A user thread to be bound to a kernel thread','C) Only many-to-one mapping','D) Only one-to-one mapping'], ans: 'B'},
+  {q: '69. Responsiveness as a benefit of threads means:', opts:['A) Faster CPU speed','B) May allow continued execution if part of process is blocked','C) More memory available','D) Better network connection'], ans: 'B'},
+  {q: '70. Resource sharing benefit of threads means:', opts:['A) Threads have separate memory spaces','B) Threads share resources of process','C) Threads cannot share anything','D) Threads need message passing only'], ans: 'B'},
+  {q: '71. Economy benefit of threads refers to:', opts:['A) Threads are more expensive than processes','B) Thread creation and switching is cheaper than process operations','C) Threads use more memory','D) Threads are slower'], ans: 'B'},
+  {q: '72. Scalability benefit of threads means:', opts:['A) Process cannot use multiple processors','B) Process can take advantage of multiprocessor architectures','C) Only single processor can be used','D) Threads slow down execution'], ans: 'B'},
+  {q: '73. A thread library provides:', opts:['A) Hardware drivers','B) API for creating and managing threads','C) Operating system kernel','D) Network protocols'], ans: 'B'},
+  {q: '74. How many main thread libraries are commonly used today?', opts:['A) One','B) Two','C) Three','D) Four'], ans: 'C'},
+  {q: '75. Which is NOT one of the three main thread libraries?', opts:['A) POSIX Pthreads','B) Windows threads','C) Java threads','D) Linux System threads'], ans: 'D'},
+
+  // Chapter 4 – Threads (True/False)
+  {q: '76. A thread shares its stack with other threads in the same process.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '77. Threads allow seamless execution of multiple sections of a program simultaneously.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '78. Most modern software applications are multithreaded.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '79. A web browser can use one thread for display and another for network retrieval.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '80. Modern operating system kernels are single-threaded.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '81. Multithreading on a single-core system provides true parallelism.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '82. User threads are managed directly by the operating system kernel.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '83. Kernel threads are supported and managed by the operating system.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '84. The One-to-One model maps each user thread to a kernel thread.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '85. Linux implements the Many-to-One threading model.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '86. The main drawback of the One-to-One model is the overhead of creating kernel threads.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '87. The Many-to-Many model allows the developer to create as many user threads as needed.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '88. The Two-level model is identical to the One-to-One model.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+  {q: '89. Thread switching has lower overhead than process context switching.', opts:['A) TRUE','B) FALSE'], ans: 'A'},
+  {q: '90. Threads are more expensive to create than processes.', opts:['A) TRUE','B) FALSE'], ans: 'B'},
+
+  // Linux Commands – 50 MCQ
+  {q: '91. What does the pwd command do?', opts:['A) Print working directory','B) Password','C) Power down','D) Print word document'], ans: 'A'},
+  {q: '92. Which command lists all files including hidden files?', opts:['A) ls','B) ls -a','C) ls -l','D) ls -h'], ans: 'B'},
+  {q: '93. What does ls -s display?', opts:['A) File sizes in blocks','B) Hidden files','C) Sorted files','D) System files'], ans: 'A'},
+  {q: '94. Which command shows file sizes in human-readable format?', opts:['A) ls -s','B) ls -h','C) ls -sh','D) ls -a'], ans: 'C'},
+  {q: '95. What does cd ~ do?', opts:['A) Change to home directory','B) Change to root directory','C) Change to previous directory','D) Create directory'], ans: 'A'},
+  {q: '96. What does cd .. do?', opts:['A) Move up one directory level','B) Move to home directory','C) List directories','D) Create directory'], ans: 'A'},
+  {q: '97. Which command is used to change directories?', opts:['A) mkdir','B) cd','C) pwd','D) ls'], ans: 'B'},
+  {q: '98. How do you navigate to your home directory?', opts:['A) cd /','B) cd ~','C) cd home','D) Both a and b'], ans: 'B'},
+  {q: '99. What does the mkdir command do?', opts:['A) Make file','B) Make directory','C) Move directory','D) Modify directory'], ans: 'B'},
+  {q: '100. Which command creates an empty file?', opts:['A) create','B) new','C) touch','D) makefile'], ans: 'C'},
+  {q: '101. What does touch filename.txt do?', opts:['A) Deletes the file','B) Creates an empty file or updates timestamp','C) Opens the file','D) Copies the file'], ans: 'B'},
+  {q: '102. What does the echo command do?', opts:['A) Repeat sound','B) Display text on terminal','C) Delete files','D) Edit files'], ans: 'B'},
+  {q: '103. What does echo "text" > file.txt do?', opts:['A) Appends text to file','B) Displays text','C) Writes text to file (overwrites existing content)','D) Deletes the file'], ans: 'C'},
+  {q: '104. Which symbol is used for output redirection?', opts:['A) <','B) >','C) |','D) &'], ans: 'B'},
+  {q: '105. What does the cat command do?', opts:['A) Concatenate and display file contents','B) Create a file','C) Delete a file','D) Categorize files'], ans: 'A'},
+  {q: '106. Which command would you use to view the contents of a text file?', opts:['A) view','B) cat','C) see','D) show'], ans: 'B'},
+  {q: '107. What does rmdir do?', opts:['A) Remove file','B) Remove empty directory','C) Remove any directory','D) Rename directory'], ans: 'B'},
+  {q: '108. Which command removes files?', opts:['A) delete','B) remove','C) rm','D) del'], ans: 'C'},
+  {q: '109. What does rm -r do?', opts:['A) Remove read-only files','B) Remove directories recursively','C) Remove recent files','D) Restore files'], ans: 'B'},
+  {q: '110. What\'s the difference between rm and rmdir?', opts:['A) No difference','B) rm removes files, rmdir removes empty directories','C) rm is faster','D) rmdir is safer'], ans: 'B'},
+  {q: '111. What does cp source destination do?', opts:['A) Change permissions','B) Copy file from source to destination','C) Compare files','D) Create path'], ans: 'B'},
+  {q: '112. What does the -r flag do in cp -r?', opts:['A) Remove files','B) Copy recursively (including directories)','C) Read-only copy','D) Reverse copy'], ans: 'B'},
+  {q: '113. Which command copies a directory and all its contents?', opts:['A) cp','B) cp -r','C) copy','D) cpdir'], ans: 'B'},
+  {q: '114. What does mv source destination do?', opts:['A) Make virtual','B) Move or rename files/directories','C) Modify version','D) Mount volume'], ans: 'B'},
+  {q: '115. How do you rename a file in Linux?', opts:['A) rename old new','B) mv old_name new_name','C) rn old new','D) change old new'], ans: 'B'},
+  {q: '116. What\'s the difference between cp and mv?', opts:['A) No difference','B) cp copies, mv moves (original is deleted)','C) mv is faster','D) cp is safer'], ans: 'B'},
+  {q: '117. What does --help do?', opts:['A) Call technical support','B) Display command help information','C) Help other users','D) Fix errors'], ans: 'B'},
+  {q: '118. Which command displays the manual page for a command?', opts:['A) help','B) info','C) man','D) manual'], ans: 'C'},
+  {q: '119. How would you get help for the ls command?', opts:['A) ls --help','B) man ls','C) Both a and b','D) help ls'], ans: 'C'},
+  {q: '120. What does the date command do?', opts:['A) Set system date','B) Display current date and time','C) Calculate dates','D) Format dates'], ans: 'B'},
+  {q: '121. What does the cal command display?', opts:['A) Calculator','B) Calendar','C) Calibration','D) Call log'], ans: 'B'},
+  {q: '122. What does the top command do?', opts:['A) Move to top directory','B) Display top files','C) Display running processes and system resources','D) Display top users'], ans: 'C'},
+  {q: '123. What does ls -l display?', opts:['A) Long listing format with detailed information','B) List of links','C) Latest files','D) Linux files only'], ans: 'A'},
+  {q: '124. In ls -l output, what does the first character indicate?', opts:['A) File size','B) File type (- for file, d for directory)','C) File owner','D) File permissions'], ans: 'B'},
+  {q: '125. What does sudo apt install ncal do?', opts:['A) Install the ncal package','B) Remove ncal','C) Update ncal','D) Configure ncal'], ans: 'A'},
+  {q: '126. What does sudo apt remove ncal do?', opts:['A) Install ncal','B) Remove the ncal package','C) Update ncal','D) Repair ncal'], ans: 'B'},
+  {q: '127. What does sudo stand for?', opts:['A) Super do','B) Superuser do','C) System undo','D) Secure domain'], ans: 'B'},
+  {q: '128. Which command sequence creates a directory and navigates into it?', opts:['A) mkdir folder; cd folder','B) cd folder; mkdir folder','C) create folder; open folder','D) make folder; enter folder'], ans: 'A'},
+  {q: '129. How do you copy a file and rename it in one command?', opts:['A) cp file1 file2','B) mv file1 file2','C) copy file1 to file2','D) rename file1 file2'], ans: 'A'},
+  {q: '130. Which command shows hidden files with detailed information?', opts:['A) ls -a -l','B) ls -al','C) Both a and b','D) ls -h'], ans: 'C'},
+  {q: '131. What happens if you use rm -r on a non-empty directory?', opts:['A) Error message','B) Removes directory and all contents','C) Removes only empty subdirectories','D) Nothing happens'], ans: 'B'},
+  {q: '132. What\'s the purpose of the touch command on an existing file?', opts:['A) Delete the file','B) Update the file\'s timestamp','C) Lock the file','D) Copy the file'], ans: 'B'},
+  {q: '133. What does echo "Hello" >> file.txt do?', opts:['A) Overwrites file with "Hello"','B) Appends "Hello" to the end of file','C) Displays "Hello"','D) Creates a new file'], ans: 'B'},
+  {q: '134. Which command would you use to see the current month\'s calendar?', opts:['A) date','B) cal','C) calendar','D) month'], ans: 'B'},
+  {q: '135. What information does ls -l NOT show?', opts:['A) File permissions','B) File size','C) File contents','D) Last modification time'], ans: 'C'},
+  {q: '136. Before removing a directory with rm -r, what should you do?', opts:['A) Nothing','B) Verify the path and contents','C) Run it twice','D) Use sudo'], ans: 'B'},
+  {q: '137. Which is safer for viewing file contents?', opts:['A) cat (for small files)','B) rm','C) mv','D) cp'], ans: 'A'},
+  {q: '138. What does cd without any arguments do?', opts:['A) Shows error','B) Takes you to home directory','C) Does nothing','D) Lists directories'], ans: 'B'},
+  {q: '139. How can you cancel a command that\'s currently running (like top)?', opts:['A) Close terminal','B) Press Ctrl+C','C) Type exit','D) Restart computer'], ans: 'B'},
+  {q: '140. Which command combination shows file sizes in human-readable format with hidden files?', opts:['A) ls -sh -a','B) ls -sha','C) ls -ash','D) All of the above'], ans: 'D'}
+];
+
+const quizDiv = document.getElementById('quiz');
+let currentQuestions = [...questions];
+
+function renderQuiz(){
+  quizDiv.innerHTML = '';
+  currentQuestions.forEach((item, idx) => {
+    const qDiv = document.createElement('div');
+    qDiv.className = 'q';
+    qDiv.id = 'q'+(idx+1);
+    const h = document.createElement('h3');
+    const questionText = item.q.replace(/^\d+\.\s*/, '');
+    h.textContent = (idx + 1) + '. ' + questionText;
+    qDiv.appendChild(h);
+
+    const optsDiv = document.createElement('div');
+    optsDiv.className = 'opts';
+
+    item.opts.forEach((opt, j)=>{
+      const label = document.createElement('label');
+      label.className = 'opt';
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'q'+idx;
+      radio.value = String.fromCharCode(65+j);
+      const span = document.createElement('span');
+      const cleanOpt = opt.replace(/^[A-D]\)\s*/, '');
+      span.textContent = String.fromCharCode(65+j) + ') ' + cleanOpt;
+      label.appendChild(radio);
+      label.appendChild(span);
+      optsDiv.appendChild(label);
+    });
+
+    qDiv.appendChild(optsDiv);
+    quizDiv.appendChild(qDiv);
+  });
+}
+
+function grade(){
+  let correct=0;
+  currentQuestions.forEach((item, idx)=>{
+    const selected = document.querySelector('input[name="q'+idx+'"]:checked');
+    const qElem = document.getElementById('q'+(idx+1));
+    qElem.classList.remove('correct','wrong');
+    qElem.querySelectorAll('.opt').forEach(l=>{l.style.opacity='1';});
+    if(selected){
+      const val = selected.value;
+      if(val === item.ans){
+        correct++;
+        qElem.classList.add('correct');
+      } else {
+        qElem.classList.add('wrong');
+        qElem.querySelectorAll('.opt').forEach(l=>{if(l.querySelector('input').checked) l.style.fontWeight='700';});
+      }
+    } else {
+      qElem.classList.add('wrong');
+    }
+    let ansText = document.createElement('div');
+    ansText.style.marginTop='8px';
+    ansText.style.fontSize='13px';
+    ansText.style.color='#0b1220';
+    ansText.innerHTML = '<small><strong>Correct answer: </strong>' + item.ans + '</small>';
+    const old = qElem.querySelector('.correctAnswer');
+    if(old) old.remove();
+    ansText.className='correctAnswer';
+    qElem.appendChild(ansText);
+  });
+
+  const total = currentQuestions.length;
+  const percent = Math.round((correct/total)*100);
+  const gradeLetter = percent>=90? 'A' : percent>=80? 'B' : percent>=70? 'C' : percent>=60? 'D' : 'F';
+
+  const summary = document.getElementById('summary');
+  summary.innerHTML = '<div class="result"><div class="score">Score: '+correct+' / '+total+' ('+percent+'%) — Grade: '+gradeLetter+'</div>'+
+                      '<div style="margin-top:8px"><small>Correct: '+correct+' — Wrong/Unanswered: '+(total-correct)+'</small></div></div>';
+  summary.scrollIntoView({behavior:'smooth'});
+}
+
+function resetQuiz(){
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.q').forEach(q=>{
+    q.classList.remove('correct','wrong');
+    const ca = q.querySelector('.correctAnswer'); if(ca) ca.remove();
+    q.querySelectorAll('.opt').forEach(l=>{l.style.fontWeight='400';l.style.opacity='1'});
+  });
+  document.getElementById('summary').innerHTML='';
+}
+
+function shuffleQuestions(){
+  resetQuiz();
+  currentQuestions = [...questions];
+  for(let i = currentQuestions.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [currentQuestions[i], currentQuestions[j]] = [currentQuestions[j], currentQuestions[i]];
+  }
+
+  currentQuestions = currentQuestions.map(q => {
+    if(q.opts.length === 2 && q.opts[0].includes('TRUE') && q.opts[1].includes('FALSE')){
+      return q;
+    }
+    const newQ = {...q};
+    const optionsWithLetters = newQ.opts.map((opt, idx) => ({
+      text: opt,
+      originalLetter: String.fromCharCode(65 + idx)
+    }));
+    for(let i = optionsWithLetters.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [optionsWithLetters[i], optionsWithLetters[j]] = [optionsWithLetters[j], optionsWithLetters[i]];
+    }
+    newQ.opts = optionsWithLetters.map(item => item.text);
+    const correctAnswerIndex = optionsWithLetters.findIndex(item => item.originalLetter === newQ.ans);
+    newQ.ans = String.fromCharCode(65 + correctAnswerIndex);
+    return newQ;
+  });
+
+  renderQuiz();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+renderQuiz();
+
+document.getElementById('submitBtn').addEventListener('click', grade);
+document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+document.getElementById('shuffleBtn').addEventListener('click', shuffleQuestions);
+
+</script>
+</body>
+</html>
